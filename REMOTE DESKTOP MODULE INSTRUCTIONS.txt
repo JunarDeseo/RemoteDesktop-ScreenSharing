@@ -1,0 +1,95 @@
+
+
+*********************** --------RDPVIEWER CLASS MODULE-----------***********************
+	*Sharing and Remote Desktop Feature
+	*C# Programming Language
+	*.NET Framework
+	*Server Client Based
+	*No Database Required
+	*Working on Windows 7, 8, 8.1, 10
+	*Source: https://stackoverflow.com/questions/16683301/screen-sharing-application-in-c-sharp-for-windows-xp-with-using-rdp-viewer-class
+
+
+************************************* ADD THESE LIBRARIES **************************************
+
+INSTRUCTIONS:
+	1. Go to ToolBox
+	2. Right click and select choose items...
+	3. Go to COM Components
+	4. Check the RDPViewerClass
+	5. Drop the item on the windows form
+
+
+************************************* ADD THESE CODES *****************************************
+
+############ DESKTOP 1 CLIENT SIDE ##############
+
+using System.Runtime.InteropServices;
+using RDPCOMAPILib;
+
+RDPSession x = new RDPSession();
+    public Form1()
+    {
+        InitializeComponent();
+    }
+
+    private void Form1_Load(object sender, EventArgs e)
+    {
+
+    }
+
+    private void Incoming(object Guest)
+    {
+        IRDPSRAPIAttendee MyGuest = (IRDPSRAPIAttendee)Guest;//???
+        MyGuest.ControlLevel = CTRL_LEVEL.CTRL_LEVEL_INTERACTIVE;
+    }
+
+    private void button1_Click(object sender, EventArgs e)
+    {
+        x.OnAttendeeConnected += Incoming;
+        x.Open();
+
+    }
+
+    private void button2_Click(object sender, EventArgs e)
+    {
+        IRDPSRAPIInvitation Invitation = x.Invitations.CreateInvitation("Trial", "MyGroup", "", 10);
+        textBox1.Text = Invitation.ConnectionString;
+
+    }
+
+    private void button3_Click(object sender, EventArgs e)
+    {
+        x.Close();
+        x = null;
+
+    }
+
+
+
+
+############ DESKTOP 2 SERVER SIDE ##############
+
+
+ public Form1()
+    {
+        InitializeComponent();
+    }
+
+    private void button1_Click(object sender, EventArgs e)
+    {
+        string Invitation = textBox1.Text;// "";// Interaction.InputBox("Insert Invitation ConnectionString", "Attention");
+        axRDPViewer1.Connect(Invitation, "User1", "");
+    }
+
+    private void button2_Click(object sender, EventArgs e)
+    {
+        axRDPViewer1.Disconnect();
+
+    }
+
+    private void Form1_Load(object sender, EventArgs e)
+    {
+        panel1.Height = Screen.PrimaryScreen.Bounds.Height - 100;
+    }
+}
